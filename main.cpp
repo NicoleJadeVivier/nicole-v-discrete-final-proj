@@ -15,17 +15,15 @@
  * machine.
  */
 #include "catch_setup.h"
+#include "PathFinder.h"
 
 int main(int argc, char** argv) {
     if(argc == 1) {
         runCatchTests();
     }
     else {
-        std::cout << "Hello, 2341 students!" << std::endl;
-        std::cout << "Attempting to open and write to " << argv[2] << std::endl;
-        std::ofstream o(argv[3]);
-        o << "Writing to output file." << std::endl;
-        o.close();
+        PathFinder myPathFinder;
+        myPathFinder.readFile(argv[1]);
     }
     return 0;
 }
