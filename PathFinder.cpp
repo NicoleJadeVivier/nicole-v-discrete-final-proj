@@ -17,7 +17,19 @@ void PathFinder::readFile(char *filename) {
 
     for (int i = 0; i < stoi(numLines); i++) {
         getline(pathDetails, line);
-        cout << line << endl;
+        parseFile(line);
+    }
+
+    pathList.set_front();
+    while(!pathList.currAtNull()) {
+        cout << pathList.get_curr_value().getOGName() << ": ";
+        pathList.get_curr_value().reset();
+        while(!pathList.get_curr_value().getContactsList().currAtNull()) {
+            cout << pathList.get_curr_value().getContactsList().get_curr_value() << " ";
+            pathList.get_curr_value().moveIter();
+        }
+        cout << endl;
+        pathList.next();
     }
 }
 
