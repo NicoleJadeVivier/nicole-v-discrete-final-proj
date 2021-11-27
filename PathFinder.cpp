@@ -88,6 +88,161 @@ void PathFinder::appendPerson(OriginalPerson origPerson, ContactedPerson connect
     }
 }
 
-void PathFinder::backTracking() {
+void PathFinder::backTracking(string& ogPerson, string& contactedPerson) {
+//create a new Path object
+    Paths newPath(ogPerson, contactedPerson);
+    //create the stack object
+    DSStack<std::pair<OriginalPerson, ContactedPerson>> myStack;
 
+    //create the pair
+    std::pair<OriginalPerson, ContactedPerson> p;
+
+    //set the iterator to the front of the Original Cities list
+    pathList.set_front();
+
+    //find the startingPoint city
+    while(!pathList.currAtNull()) {
+        if (pathList.get_curr_value() == ogPerson)
+            break;
+        else
+            pathList.next();
+    }
+
+    ContactedPerson emptyPerson;
+    p = std::make_pair(pathList.get_curr_value(), emptyPerson);
+    //push the first city to the stack
+    myStack.push(p);
+
+    //set the iterator to the front of the destination list
+    myStack.peek().first.reset();
+
+    while(!myStack.isEmpty()) {
+
+        if (myStack.peek().first == contactedPerson) {
+            savePaths2(myStack, newPath);
+            //save stack
+            //pop the top off of the stack
+            myStack.pop();
+
+            //check if the stack is empty, if so break out of the loop
+            if (myStack.isEmpty())
+                break;
+
+            //is the current top of the stack at its last destination?
+            //pop off all elements pointing to nullptr off of the stack
+            while (myStack.peek().first.getContactsList().currAtNull()) {
+                myStack.pop();
+                //check if the stack is empty, if so break out of the inner loop
+                if (myStack.isEmpty())
+                    break;
+            }
+            //check if the stack is empty to break out of outer loop
+            if (myStack.isEmpty())
+                break;
+
+        } else {
+            //is the current top pointing to nullptr?
+
+            //iterate until it is no longer pointing to nullptr or until the stack is empty
+            while (myStack.peek().first.getContactsList().currAtNull()) {
+                //yes pop off the stack
+                myStack.pop();
+            }
+
+            //check if the stack is empty to break out of outer loop
+            if (myStack.isEmpty())
+                break;
+
+            //there are more cities to explore
+
+            //is the next city in the list already on the stack?
+            while(containsElement(myStack.peek().first.getContactsList().get_curr_value().getName(), myStack)) {
+                if (myStack.peek().first.getContactsList().hasNext()) {
+                    myStack.peek().first.moveIter();
+                } else {
+                    myStack.pop();
+                    //loop makes sure that it gets to a city that is not pointing to nullptr or pops elements off
+                    //the stack until it is empty or it is pointing to an element that is not pointing to nullptr
+                    while (myStack.peek().first.getContactsList().currAtNull()) {
+                        //yes pop off the stack
+                        myStack.pop();
+                        //check if the stack is empty to break out of inner loop
+                        if (myStack.isEmpty())
+                            break;
+                    }
+                }
+                //check if the stack is empty to break out of the second inner loop
+                if(myStack.isEmpty())
+                    break;
+            }
+
+            //check if the stack is empty to break out of the outer loop
+            if (myStack.isEmpty())
+                break;
+
+            //reset the flightList iterator
+            pathList.set_front();
+
+            //find original city object corresponding with the city connection
+            while(!myStack.peek().first.getContactsList().currAtNull()) {
+                if (myStack.peek().first.getContactsList().get_curr_value().getName() == pathList.get_curr_value().getOGName())
+                    break;
+                else
+                    pathList.next();
+            }
+
+            p = std::make_pair(pathList.get_curr_value(), myStack.peek().first.getPerson());
+            //move the iterator before pushing the next element so that it does not get stuck in an infinite loop
+            myStack.peek().first.moveIter();
+
+            //create the pair to be pushed to the stack with the original object and the corresponding destination information
+            //push the next city to the stack
+            myStack.push(p);
+
+            //set the iterator to the beginning of the newly pushed city's destination list
+            myStack.peek().first.reset();
+
+
+        }
+    }
+    //push the path object which contains all the paths and corresponding costs for the requested flight to the path stack
+    pathStack.push(newPath);
+}
+
+void PathFinder::savePaths2(DSStack<std::pair<OriginalPerson, ContactedPerson>> tempStack, Paths &thePath) {
+//temporary vector to hold the locations
+    DSVector<std::pair<OriginalPerson, ContactedPerson>> tempVec;
+
+    //put the locations in another stack to reverse them
+    DSStack<std::pair<OriginalPerson, ContactedPerson>> reverseStack;
+
+    while(!tempStack.isEmpty()) {
+        reverseStack.push(tempStack.peek());
+        tempStack.pop();
+    }
+
+    //add all the elements on the stack to the temporary vector
+    while(!reverseStack.isEmpty()) {
+        tempVec.push_back(reverseStack.peek());
+        reverseStack.pop();
+    }
+
+    pair<double, double> pInfo;
+    pInfo = make_pair(0.0, 0.0);
+
+    pair<DSVector<pair<OriginalPerson, ContactedPerson>>, pair<double, double>> p;
+    p = make_pair(tempVec, pInfo);
+
+    //add the path to the path object with containing all the paths for this requested flight
+    thePath.addPath(p);
+}
+
+bool PathFinder::containsElement(string currPerson, DSStack<std::pair<OriginalPerson, ContactedPerson>> tempStack) {
+    while (!tempStack.isEmpty()) {
+        if (currPerson == tempStack.peek().first.getOGName()) {
+            return true;
+        }
+        tempStack.pop();
+    }
+    return false;
 }
