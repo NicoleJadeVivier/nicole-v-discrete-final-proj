@@ -22,7 +22,7 @@ public:
     void parseFile(string);
     void appendPerson(OriginalPerson, ContactedPerson);
 
-
+    void backTracking(string&, string&);
 
 };
 

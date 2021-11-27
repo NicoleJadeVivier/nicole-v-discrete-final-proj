@@ -87,3 +87,7 @@ void PathFinder::appendPerson(OriginalPerson origPerson, ContactedPerson connect
         pathList.get_curr_value().addCity(connectedPerson);
     }
 }
+
+void PathFinder::backTracking() {
+
+}
