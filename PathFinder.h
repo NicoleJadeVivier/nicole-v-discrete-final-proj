@@ -23,6 +23,7 @@ public:
     void readFile(char*);
     void parseFile(string);
     void appendPerson(OriginalPerson, ContactedPerson);
+    void readDesiredPaths(char*, char*);
 
     void backTracking(string&, string&);
     void savePaths2(DSStack<std::pair<OriginalPerson, ContactedPerson>>, Paths&);
