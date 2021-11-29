@@ -3,6 +3,12 @@
  * Based on PA 02 Template repo
  */
 
+//Nicole Vivier
+//CS2353
+//Rachel Becker
+//12/6/21
+
+//Project based off of CS2341 PA04
 #include <iostream>
 #include <fstream>
 

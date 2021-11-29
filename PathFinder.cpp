@@ -64,8 +64,8 @@ void PathFinder::appendPerson(OriginalPerson origPerson, ContactedPerson connect
         //add the destination city to that original city's linkedlist.
         pathList.get_curr_value().addCity(connectedPerson);
     } else {
-        //if the list is not empty, check to see if the original city already exists. If so, just append
-        //the destination city to the already existing city's linkedlist.
+        //if the list is not empty, check to see if the original person already exists. If so, just append
+        //the ending person to the already existing person's linkedlist.
         pathList.set_front();
         while (pathList.hasNext()) {
             if (origPerson == pathList.get_curr_value()) {
@@ -78,7 +78,7 @@ void PathFinder::appendPerson(OriginalPerson origPerson, ContactedPerson connect
             pathList.get_curr_value().addCity(connectedPerson);
             return;
         }
-        //if the object does not already exist, append the originalCity to the adjacency list
+        //if the object does not already exist, append the original person to the adjacency list
         pathList.append(origPerson);
         //iterate to the tail of the list because that is where the new element is
         pathList.set_front();
@@ -101,7 +101,7 @@ void PathFinder::backTracking(string& ogPerson, string& contactedPerson) {
     //set the iterator to the front of the Original Cities list
     pathList.set_front();
 
-    //find the startingPoint city
+    //find the ogPerson person
     while(!pathList.currAtNull()) {
         if (pathList.get_curr_value() == ogPerson)
             break;
@@ -111,10 +111,10 @@ void PathFinder::backTracking(string& ogPerson, string& contactedPerson) {
 
     ContactedPerson emptyPerson;
     p = std::make_pair(pathList.get_curr_value(), emptyPerson);
-    //push the first city to the stack
+    //push the first person to the stack
     myStack.push(p);
 
-    //set the iterator to the front of the destination list
+    //set the iterator to the front of the contacts list
     myStack.peek().first.reset();
 
     while(!myStack.isEmpty()) {
@@ -129,7 +129,7 @@ void PathFinder::backTracking(string& ogPerson, string& contactedPerson) {
             if (myStack.isEmpty())
                 break;
 
-            //is the current top of the stack at its last destination?
+            //is the current top of the stack at its last person?
             //pop off all elements pointing to nullptr off of the stack
             while (myStack.peek().first.getContactsList().currAtNull()) {
                 myStack.pop();
@@ -154,15 +154,15 @@ void PathFinder::backTracking(string& ogPerson, string& contactedPerson) {
             if (myStack.isEmpty())
                 break;
 
-            //there are more cities to explore
+            //there are more persons to explore
 
-            //is the next city in the list already on the stack?
+            //is the next person in the list already on the stack?
             while(containsElement(myStack.peek().first.getContactsList().get_curr_value().getName(), myStack)) {
                 if (myStack.peek().first.getContactsList().hasNext()) {
                     myStack.peek().first.moveIter();
                 } else {
                     myStack.pop();
-                    //loop makes sure that it gets to a city that is not pointing to nullptr or pops elements off
+                    //loop makes sure that it gets to a person that is not pointing to nullptr or pops elements off
                     //the stack until it is empty or it is pointing to an element that is not pointing to nullptr
                     while (myStack.peek().first.getContactsList().currAtNull()) {
                         //yes pop off the stack
@@ -184,7 +184,7 @@ void PathFinder::backTracking(string& ogPerson, string& contactedPerson) {
             //reset the flightList iterator
             pathList.set_front();
 
-            //find original city object corresponding with the city connection
+            //find original person object corresponding with the person connection
             while(!myStack.peek().first.getContactsList().currAtNull()) {
                 if (myStack.peek().first.getContactsList().get_curr_value().getName() == pathList.get_curr_value().getOGName())
                     break;
@@ -196,25 +196,25 @@ void PathFinder::backTracking(string& ogPerson, string& contactedPerson) {
             //move the iterator before pushing the next element so that it does not get stuck in an infinite loop
             myStack.peek().first.moveIter();
 
-            //create the pair to be pushed to the stack with the original object and the corresponding destination information
-            //push the next city to the stack
+            //create the pair to be pushed to the stack with the original object and the corresponding connection information
+            //push the next person to the stack
             myStack.push(p);
 
-            //set the iterator to the beginning of the newly pushed city's destination list
+            //set the iterator to the beginning of the newly pushed person's connection list
             myStack.peek().first.reset();
 
 
         }
     }
-    //push the path object which contains all the paths and corresponding costs for the requested flight to the path stack
+    //push the path object which contains all the paths for the requested connection to the path stack
     pathStack.push(newPath);
 }
 
 void PathFinder::savePaths2(DSStack<std::pair<OriginalPerson, ContactedPerson>> tempStack, Paths &thePath) {
-//temporary vector to hold the locations
+//temporary vector to hold the people
     DSVector<std::pair<OriginalPerson, ContactedPerson>> tempVec;
 
-    //put the locations in another stack to reverse them
+    //put the people in another stack to reverse them
     DSStack<std::pair<OriginalPerson, ContactedPerson>> reverseStack;
 
     while(!tempStack.isEmpty()) {
@@ -234,7 +234,7 @@ void PathFinder::savePaths2(DSStack<std::pair<OriginalPerson, ContactedPerson>> 
     pair<DSVector<pair<OriginalPerson, ContactedPerson>>, pair<double, double>> p;
     p = make_pair(tempVec, pInfo);
 
-    //add the path to the path object with containing all the paths for this requested flight
+    //add the path to the path object with containing all the paths for this requested connection
     thePath.addPath(p);
 }
 
@@ -276,13 +276,11 @@ void PathFinder::readDesiredPaths(char *filename, char *filename2) {
         myFile << pathStack.peek().getStartingPerson() << " -> " << pathStack.peek().getContactedPerson() << endl;
         //if the parameter is equal to T, call the time sorting function. Otherwise call the cost function.
 
-        //check to see if there are any itineraries to print out
+        //check to see if there are any paths to print out
         if (pathStack.peek().getVector().getLength() == 0) {
             myFile << "No interactions for this requested path, no one needs to quarantine!" << endl;
         } else {
-            //have a separate count to make sure that it does not output more than 3 itineraries
-            int count = 0;
-            for (int i = 0; count < 3 && i < pathStack.peek().getVector().getLength(); i++) {
+            for (int i = 0; i < pathStack.peek().getVector().getLength(); i++) {
                 myFile << "   Spread Map " << i + 1 << ": " << endl;
                 for (int j = 1; j < pathStack.peek().getVector().at(i).first.getLength(); j++) {
                     myFile << "      ";
@@ -291,11 +289,10 @@ void PathFinder::readDesiredPaths(char *filename, char *filename2) {
                     myFile << pathStack.peek().getVector().at(i).first.at(j).second.getName() << endl;
                 }
                 myFile << endl;
-                count++;
             }
         }
 
-        //pop this Paths object off of the stack to empty it for the next requested flight
+        //pop this Paths object off of the stack to empty it for the next requested connection
         pathStack.pop();
     }
 
