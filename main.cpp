@@ -24,6 +24,7 @@ int main(int argc, char** argv) {
     else {
         PathFinder myPathFinder;
         myPathFinder.readFile(argv[1]);
+        myPathFinder.readDesiredPaths(argv[2], argv[3]);
     }
     return 0;
 }

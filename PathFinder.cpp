@@ -246,3 +246,58 @@ bool PathFinder::containsElement(string currPerson, DSStack<std::pair<OriginalPe
     }
     return false;
 }
+
+void PathFinder::readDesiredPaths(char *filename, char *filename2) {
+    ofstream myFile(filename2);
+
+    ifstream desiredPaths(filename);
+
+    if(!desiredPaths.is_open()) {
+        cout << "Could not open file" << endl;
+    }
+
+    string numLines;
+    string startingPerson;
+    string endingPerson;
+
+    getline(desiredPaths, numLines);
+
+    //parse the information from the file
+    for (int i = 0; i < stoi(numLines); i++) {
+        getline(desiredPaths, startingPerson, ' ');
+        getline(desiredPaths, endingPerson);
+
+        cout << startingPerson << "->" << endingPerson << endl;
+        //find all the paths
+        backTracking(startingPerson, endingPerson);
+
+        //print the information to the file
+        myFile << "Path " << i + 1 << ": ";
+        myFile << pathStack.peek().getStartingPerson() << " -> " << pathStack.peek().getContactedPerson() << endl;
+        //if the parameter is equal to T, call the time sorting function. Otherwise call the cost function.
+
+        //check to see if there are any itineraries to print out
+        if (pathStack.peek().getVector().getLength() == 0) {
+            myFile << "No connections for this requested path." << endl;
+        } else {
+            //have a separate count to make sure that it does not output more than 3 itineraries
+            int count = 0;
+            for (int i = 0; count < 3 && i < pathStack.peek().getVector().getLength(); i++) {
+                myFile << "   Itinerary " << i + 1 << ": " << endl;
+                for (int j = 1; j < pathStack.peek().getVector().at(i).first.getLength(); j++) {
+                    myFile << "      ";
+                    myFile << pathStack.peek().getVector().at(i).first.at(j - 1).first;
+                    myFile << " -> ";
+                    myFile << pathStack.peek().getVector().at(i).first.at(j).second.getName() << endl;
+                }
+                myFile << endl;
+                count++;
+            }
+        }
+
+        //pop this Paths object off of the stack to empty it for the next requested flight
+        pathStack.pop();
+    }
+
+    myFile.close();
+}

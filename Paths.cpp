@@ -26,3 +26,11 @@ DSVector<pair<DSVector<pair<OriginalPerson, ContactedPerson>>, pair<double, doub
 void Paths::addPath(pair<DSVector<pair<OriginalPerson, ContactedPerson>>, pair<double, double>> thePath) {
     paths.push_back(thePath);
 }
+
+string Paths::getStartingPerson() {
+    return startingPerson;
+}
+
+string Paths::getContactedPerson() {
+    return contactedPerson;
+}

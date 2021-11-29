@@ -21,6 +21,9 @@ public:
     Paths(string, string, pair<DSVector<pair<OriginalPerson, ContactedPerson>>, pair<double, double>>);
 
     void addPath(pair<DSVector<pair<OriginalPerson, ContactedPerson>>, pair<double, double>>);
+
+    string getStartingPerson();
+    string getContactedPerson();
     DSVector<pair<DSVector<pair<OriginalPerson, ContactedPerson>>, pair<double, double>>>& getVector();
 };
 
