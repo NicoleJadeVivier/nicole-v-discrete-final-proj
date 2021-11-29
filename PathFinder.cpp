@@ -20,17 +20,18 @@ void PathFinder::readFile(char *filename) {
         parseFile(line);
     }
 
-    pathList.set_front();
-    while(!pathList.currAtNull()) {
-        cout << pathList.get_curr_value().getOGName() << ": ";
-        pathList.get_curr_value().reset();
-        while(!pathList.get_curr_value().getContactsList().currAtNull()) {
-            cout << pathList.get_curr_value().getContactsList().get_curr_value() << " ";
-            pathList.get_curr_value().moveIter();
-        }
-        cout << endl;
-        pathList.next();
-    }
+    //prints out adjacency list
+//    pathList.set_front();
+//    while(!pathList.currAtNull()) {
+//        cout << pathList.get_curr_value().getOGName() << ": ";
+//        pathList.get_curr_value().reset();
+//        while(!pathList.get_curr_value().getContactsList().currAtNull()) {
+//            cout << pathList.get_curr_value().getContactsList().get_curr_value() << " ";
+//            pathList.get_curr_value().moveIter();
+//        }
+//        cout << endl;
+//        pathList.next();
+//    }
 }
 
 void PathFinder::parseFile(string str) {
@@ -267,23 +268,22 @@ void PathFinder::readDesiredPaths(char *filename, char *filename2) {
         getline(desiredPaths, startingPerson, ' ');
         getline(desiredPaths, endingPerson);
 
-        cout << startingPerson << "->" << endingPerson << endl;
         //find all the paths
         backTracking(startingPerson, endingPerson);
 
         //print the information to the file
-        myFile << "Path " << i + 1 << ": ";
+        myFile << "All possible Covid spread paths " << i + 1 << ": ";
         myFile << pathStack.peek().getStartingPerson() << " -> " << pathStack.peek().getContactedPerson() << endl;
         //if the parameter is equal to T, call the time sorting function. Otherwise call the cost function.
 
         //check to see if there are any itineraries to print out
         if (pathStack.peek().getVector().getLength() == 0) {
-            myFile << "No connections for this requested path." << endl;
+            myFile << "No interactions for this requested path, no one needs to quarantine!" << endl;
         } else {
             //have a separate count to make sure that it does not output more than 3 itineraries
             int count = 0;
             for (int i = 0; count < 3 && i < pathStack.peek().getVector().getLength(); i++) {
-                myFile << "   Itinerary " << i + 1 << ": " << endl;
+                myFile << "   Spread Map " << i + 1 << ": " << endl;
                 for (int j = 1; j < pathStack.peek().getVector().at(i).first.getLength(); j++) {
                     myFile << "      ";
                     myFile << pathStack.peek().getVector().at(i).first.at(j - 1).first;
