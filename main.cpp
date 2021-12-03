@@ -24,13 +24,23 @@
 #include "PathFinder.h"
 
 int main(int argc, char** argv) {
-    if(argc == 1) {
-        runCatchTests();
-    }
-    else {
+//    if(argc == 1) {
+//        runCatchTests();
+//    }
+//    else {
+//        PathFinder myPathFinder;
+//        myPathFinder.readFile("data/sample01-paths-data.txt");
+//        myPathFinder.readDesiredPaths("data/sample01-req-paths.txt", "data/output.txt");
+//    }
+//set up to override the catch framework
+    if (argc == 1) {
         PathFinder myPathFinder;
-        myPathFinder.readFile(argv[1]);
-        myPathFinder.readDesiredPaths(argv[2], argv[3]);
+        myPathFinder.readFile("data/sample01-paths-data.txt");
+        myPathFinder.readDesiredPaths("data/sample01-req-paths.txt", "data/output.txt");
+    } else {
+        PathFinder myPathFinder;
+        myPathFinder.readFile("data/sample01-paths-data.txt");
+        myPathFinder.readDesiredPaths("data/sample01-req-paths.txt", "data/output.txt");
     }
     return 0;
 }
